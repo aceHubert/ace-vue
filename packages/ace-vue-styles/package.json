@@ -1,0 +1,48 @@
+{
+  "name": "@ace-vue/styles",
+  "version": "0.1.0-alpha",
+  "private": false,
+  "author": "Hubert",
+  "description": "AceVue Styles.",
+  "main": "./dist/index.js",
+  "keywords": [
+    "vue",
+    "vue-component",
+    "ace-vue",
+    "styles"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aceHubert/ace-vue.git",
+    "directory": "packages/ace-vue-styles"
+  },
+  "bugs": {
+    "url": "https://github.com/aceHubert/ace-vue-ui/issues"
+  },
+  "scripts": {
+    "build": "yarn build:cjs && yarn build:esm && yarn build:es && yarn build:copy-files",
+    "build:cjs": "cross-env NODE_ENV=production BABEL_ENV=cjs babel --config-file ../../babel.config.js ./src --out-dir ./build --ignore \"**/*.test.js\"",
+    "build:esm": "cross-env NODE_ENV=production BABEL_ENV=esm babel --config-file ../../babel.config.js ./src --out-dir ./build/esm --ignore \"**/*.test.js\"",
+    "build:es": "cross-env NODE_ENV=production BABEL_ENV=es babel --config-file ../../babel.config.js ./src --out-dir ./build/es --ignore \"**/*.test.js\"",
+    "build:copy-files": "node ../../scripts/copy-files.js",
+    "prebuild": "rimraf build",
+    "release": "yarn build && npm publish build --tag latest",
+    "test": "cd ../../ && cross-env NODE_ENV=test mocha 'packages/fabric-ui-styles/**/*.test.js' --exclude '**/node_modules/**'"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^2.6.10"
+  },
+  "dependencies":{
+    "deepmerge": "^3.3.0",
+    "jss": "^9.8.7",
+    "jss-plugin-camel-case": "^10.0.0-alpha.7",
+    "jss-plugin-default-unit": "^10.0.0-alpha.7",
+    "jss-plugin-global": "^10.0.0-alpha.7",
+    "jss-plugin-nested": "^10.0.0-alpha.7",
+    "jss-plugin-props-sort": "^10.0.0-alpha.7",
+    "jss-plugin-rule-value-function": "^10.0.0-alpha.7",
+    "jss-plugin-vendor-prefixer": "^10.0.0-alpha.7",   
+    "warning": "^4.0.3"
+  }
+}
