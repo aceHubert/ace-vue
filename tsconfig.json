@@ -1,21 +1,14 @@
 {
+  "extends": "./tsconfig.base",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "lib": ["esnext", "esnext.asynciterable", "dom"],
-    "esModuleInterop": true,
-    "allowJs": true,
-    "sourceMap": true,
-    "strict": true,
-    "noEmit": true,
     "baseUrl": ".",
+    "outDir": "dist",
     "paths": {
       "~/*": ["./*"],
       "@/*": ["./*"]
     },
-    "types": ["@types/node", "@nuxt/types"],
-    "experimentalDecorators": true
+    "types": ["@types/node", "@nuxt/types"]
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "**/*.spec.ts"],
+  "include": ["src/**/*"]
 }

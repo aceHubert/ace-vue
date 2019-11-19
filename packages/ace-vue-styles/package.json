@@ -2,7 +2,10 @@
   "name": "@ace-vue/styles",
   "version": "0.1.0-alpha",
   "private": false,
-  "author": "Hubert",
+  "author": {
+    "name": "Hubert",
+    "email": "yi.xiang@live.com"
+  },
   "description": "AceVue Styles.",
   "main": "./dist/index.js",
   "keywords": [
