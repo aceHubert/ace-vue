@@ -1,14 +1,35 @@
 {
-  "extends": "./tsconfig.base",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "dist",
-    "paths": {
-      "~/*": ["./*"],
-      "@/*": ["./*"]
-    },
-    "types": ["@types/node", "@nuxt/types"]
+  "formatCodeOptions": {
+    "indentSize": 2,
+    "tabSize": 2
   },
-  "exclude": ["node_modules", "**/*.spec.ts"],
-  "include": ["src/**/*"]
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es5",
+    "lib": ["esnext", "dom"],
+    "baseUrl": "./",
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "paths": {
+      "@acevue/utils": ["./packages/acevue-utils/src"],
+      "@acevue/utils/*": ["./packages/acevue-utils/src/*"],
+      "@acevue/styles": ["./packages/acevue-styles/src"],
+      "@acevue/styles/*": ["./packages/acevue-styles/src/*"],
+      "@acevue/hooks": ["./packages/acevue-hooks/src"],
+      "@acevue/hooks/*": ["./packages/acevue-hooks/src/*"],
+      "@acevue/async-manager": ["./packages/acevue-sync-manager/src"],
+      "@acevue/async-manager/*": ["./packages/acevue-sync-manager/src/*"],
+      "@acevue/docs-generate": ["./packages/acevue-docs-generate/src"],
+      "@acevue/docs-generate/*": ["./packages/acevue-docs-generate/src/*"]
+    }
+  },
+  "exclude": ["**/build/"]
 }

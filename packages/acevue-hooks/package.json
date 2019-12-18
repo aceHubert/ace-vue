@@ -1,0 +1,47 @@
+{
+  "name": "@acevue/hooks",
+  "version": "0.1.0-alpha",
+  "private": false,
+  "author": {
+    "name": "Hubert",
+    "email": "yi.xiang@live.com"
+  },
+  "description": "AceVue Hooks.",
+  "main": "./dist/index.js",
+  "keywords": [
+    "vue",
+    "vue-component",
+    "acevue",
+    "hooks"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aceHubert/acevue.git",
+    "directory": "packages/acevue-hooks"
+  },
+  "bugs": {
+    "url": "https://github.com/aceHubert/acevue/issues"
+  },
+  "homepage": "https://vue.acehubert.com/",
+  "scripts": {
+    "start": "cross-env TARGET=es rollup -c scripts/rollup.config.js -w",
+    "build": "rollup -c scripts/rollup.config.js",
+    "release": "bash scripts/release.sh",
+    "test": "cd ../../ && cross-env NODE_ENV=test jest --config packages/acevue-hooks/jest.config.json"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "vue": "^2.5.22"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "rollup": "^1.27.2",
+    "rollup-plugin-clear": "^2.0.7",
+    "rollup-plugin-json": "^4.0.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^5.1.2",
+    "rollup-plugin-typescript2": "^0.25.2",
+    "vue": "^2.5.22"
+  }
+}
