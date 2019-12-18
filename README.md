@@ -1,3 +1,3 @@
-# AceVue
+# @AceVue
 
-> 常用方法封装
+> Common functions & Vue components
