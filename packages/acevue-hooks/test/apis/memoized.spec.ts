@@ -3,9 +3,10 @@ import { withHooks, useData, useMemo } from '../../src';
 
 describe('apis/useMemo', () => {
   it('should works', done => {
+    const spy = jest.fn();
     let data: { a: number; b: number; c: number };
     let result: number;
-    let calls = 0;
+
     new Vue(
       withHooks(h => {
         data = useData({
@@ -14,7 +15,7 @@ describe('apis/useMemo', () => {
           c: 3,
         });
         result = useMemo(() => {
-          calls++;
+          spy();
           return data.a + data.b;
         }, [data.a, data.b]);
 
@@ -24,20 +25,21 @@ describe('apis/useMemo', () => {
 
     expect(data!.a).toBe(1);
     expect(result!).toBe(3);
-    expect(calls).toBe(1);
+    expect(spy.mock.calls.length).toBe(1);
     data!.c = 4;
     window
       .waitForUpdate(() => {
         // c is not on dependencies, the funcion will not execite
         expect(data!.a).toBe(1);
         expect(result!).toBe(3);
-        expect(calls).toBe(1);
+        expect(spy.mock.calls.length).toBe(1);
         data!.a = 3;
       })
       .then(() => {
+        // a:3 b:5
         expect(data!.a).toBe(3);
         expect(result!).toBe(5);
-        expect(calls).toBe(2);
+        expect(spy.mock.calls.length).toBe(2);
       })
       .then(done);
   });

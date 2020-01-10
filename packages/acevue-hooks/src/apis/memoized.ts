@@ -1,9 +1,9 @@
-import { ensureCurrentVM, status } from '../helper';
-import { objectIs } from '../utils';
+import { objectIs } from '@acevue/utils/type';
+import { ensureCurrentVM, getCallId, isMounting } from '../helper';
 import { DependencyList } from '../types/apis';
 import { useRef } from './ref';
 
-function memoizedHelper<T>(factory: () => T) {
+function memoizedHelper<T>(factory: () => T): (deps: DependencyList | undefined) => T {
   const isMounting = useRef(true);
   const record: {
     deps: DependencyList | undefined;
@@ -15,6 +15,7 @@ function memoizedHelper<T>(factory: () => T) {
 
   return (deps: DependencyList | undefined) => {
     const { deps: prevDeps = [] } = record;
+
     if (isMounting.current) {
       isMounting.current = false;
       record.deps = deps;
@@ -22,6 +23,7 @@ function memoizedHelper<T>(factory: () => T) {
       record.deps = deps;
       record.value = factory();
     }
+
     return record.value;
   };
 }
@@ -29,9 +31,9 @@ function memoizedHelper<T>(factory: () => T) {
 // allow undefined, but don't make it optional as that is very likely a mistake
 export function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T {
   const vm = ensureCurrentVM('useMemo');
-  const id = ++status.callIndex;
+  const id = getCallId();
 
-  if (status.isMounting) {
+  if (isMounting()) {
     if (!vm._memoStore) {
       vm._memoStore = {};
     }

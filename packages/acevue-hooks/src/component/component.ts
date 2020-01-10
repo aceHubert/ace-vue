@@ -6,7 +6,7 @@ import Vue, {
 } from 'vue';
 import { getCurrentVM, setCurrentVM } from '../runtimeContext';
 import { warn, proxy } from '../utils';
-import { status } from '../helper';
+import { resetCallId } from '../helper';
 import { HasDefined } from '../types/basic';
 import {
   ComponentPropsOptionsWithRecordProps,
@@ -106,7 +106,7 @@ export function createComponent<
     Omit<Vue2ComponentOptions<Vue>, keyof ComponentOptionsWithRecordProps<never, never>>,
 ): VueProxy<PropsOptions, RawBindings>;
 // implementation, close to no-op
-export function createComponent(options: any) {
+export function createComponent(options: any): any {
   return options as any;
 }
 
@@ -141,17 +141,17 @@ export function withHooks<RawBindings = Data>(
 ): VueProxy<never, RawBindings>;
 // implementation, close to no-op
 export function withHooks(propsOrRender: any, render?: any): any {
-  let _props: {}, _render: (h: CreateElement, props: any, cxt: UseHooksContext) => VNode;
+  let $$props: {}, $$render: (h: CreateElement, props: any, cxt: UseHooksContext) => VNode;
   if (typeof propsOrRender === 'function') {
-    _props = {};
-    _render = propsOrRender;
+    $$props = {};
+    $$render = propsOrRender;
   } else {
-    _props = propsOrRender;
-    _render = render;
+    $$props = propsOrRender;
+    $$render = render;
   }
 
   return {
-    props: _props,
+    props: $$props,
     data() {
       return {
         _state: {},
@@ -160,11 +160,8 @@ export function withHooks(propsOrRender: any, render?: any): any {
     render(this: ComponentInstance, h: CreateElement) {
       const vm = this;
       const cxt = createUseHooksContext(vm);
-      status.callIndex = 0;
-      return activateCurrentInstance(vm, () => {
-        status.isMounting = !this._vnode;
-        return _render(h, this.$props, cxt);
-      });
+      resetCallId();
+      return activateCurrentInstance(vm, () => $$render(h, this.$props, cxt));
     },
   };
 }
@@ -173,7 +170,7 @@ export function activateCurrentInstance(
   vm: ComponentInstance,
   fn: (vm_: ComponentInstance) => any,
   onError?: (err: Error) => void,
-) {
+): void {
   const preVm = getCurrentVM();
   setCurrentVM(vm);
   try {
@@ -246,9 +243,9 @@ export function createUseHooksContext(
   return ctx;
 }
 
-export function resolveScopedSlots(
-  _vm: ComponentInstance,
-  _slotsProxy: { [x: string]: Function },
-): void {
-  // todo
-}
+// export function resolveScopedSlots (
+//   _vm: ComponentInstance,
+//   _slotsProxy: { [x: string]: Function },
+// ): void {
+//   // todo
+// }

@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "declaration": true,
+    "declarationDir": "types",
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*.ts"]
+}

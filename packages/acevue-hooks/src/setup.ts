@@ -11,9 +11,9 @@ import {
   activateCurrentInstance,
 } from './component';
 import { warn, assert, isPlainObject } from './utils';
-import { status } from './helper';
+import { resetCallId } from './helper';
 
-export function mixin(Vue: VueConstructor) {
+export function mixin(Vue: VueConstructor): void {
   Vue.mixin({
     beforeCreate(this: ComponentInstance) {
       const vm = this;
@@ -53,7 +53,7 @@ export function mixin(Vue: VueConstructor) {
   });
 }
 
-function useHooksInit(vm: ComponentInstance, props: Record<any, any> = {}) {
+function useHooksInit(vm: ComponentInstance, props: Record<any, any> = {}): void {
   const useHooks = vm.$options.useHooks!;
   const render = vm.$options.render;
   const cxt = createUseHooksContext(vm);
@@ -78,11 +78,11 @@ function useHooksInit(vm: ComponentInstance, props: Record<any, any> = {}) {
   //   return
   // }
 
+  // @ts-ignore
   vm.$options.render = (...args: any[]) => {
     return activateCurrentInstance(vm, () => {
       // reset callIndex
-      status.callIndex = 0;
-      status.isMounting = !vm._vnode;
+      resetCallId();
       binding = useHooks(props, cxt);
 
       // todo: test

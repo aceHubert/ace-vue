@@ -3,7 +3,7 @@
  * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/e1f9647734bd990f49b0aca0f44acd4d55fe1e93/types/react/index.d.ts#L970
  */
 
-import { proxy } from '../utils';
+import { Data, VueProxy, ComponentPropsOptionsWithRecordProps } from '../component';
 
 // Unlike the class component setState, the updates are not allowed to be partial
 export type SetStateAction<S> = S | ((prevState: S) => S);
@@ -43,18 +43,31 @@ export interface CallableRefObject<T> {
   current: T | null;
 }
 
-export class RefImpl<T> implements RefObject<T> {
-  public current!: T;
-  constructor({ get, set }: RefOption<T>) {
-    proxy(this, 'current', {
-      get,
-      set,
-    });
-  }
-}
-
-export function isRef<T>(value: any): value is Ref<T> {
-  return value instanceof RefImpl;
-}
-
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface InjectionKey<T> extends Symbol {}
+
+export interface Emmiter<T> {
+  on(handler: (value: T, changedBits: number) => void): void;
+  off(handler: (value: unknown, changedBits: number) => void): void;
+  get(): T;
+  set(value: T, changedBits: number): void;
+}
+
+// Context via RenderProps
+interface ProviderProps<T> {
+  value: T;
+  // children?: VNode;
+}
+
+interface ConsumerProps<T> {
+  observedBits?: number; // unstable
+  // children?: (value: T) => VNode;
+}
+
+type Provider<T> = VueProxy<ComponentPropsOptionsWithRecordProps<ProviderProps<T>>, Data>;
+type Consumer<T> = VueProxy<ComponentPropsOptionsWithRecordProps<ConsumerProps<T>>, Data>;
+export interface Context<T> {
+  Provider: Provider<T>;
+  Consumer: Consumer<T>;
+  [key: string]: any;
+}

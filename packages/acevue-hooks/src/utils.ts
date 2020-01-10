@@ -17,7 +17,7 @@ export function proxy(target: any, key: string, { get, set }: { get?: Function; 
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
 
-export function def(obj: Object, key: string, val: any, enumerable?: boolean) {
+export function def(obj: Record<string, any>, key: string, val: any, enumerable?: boolean) {
   Object.defineProperty(obj, key, {
     value: val,
     enumerable: !!enumerable,
@@ -27,32 +27,8 @@ export function def(obj: Object, key: string, val: any, enumerable?: boolean) {
 }
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
-export function hasOwn(obj: Object | any[], key: string): boolean {
+export function hasOwn(obj: Record<string, any> | any[], key: string): boolean {
   return hasOwnProperty.call(obj, key);
-}
-
-// Inlined Object.is polyfill.
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is
-export function objectIs(x: any, y: any) {
-  if (x === y) {
-    return x !== 0 || 1 / x === 1 / y;
-  }
-  // eslint-disable-next-line
-  return x !== x && y !== y;
-}
-
-// https://developer.mozilla.org/en-US/docs/Glossary/Primitive
-export function isPrimitive(value: any): boolean {
-  return (
-    typeof value === 'string' ||
-    typeof value === 'number' ||
-    // $flow-disable-line
-    typeof value === 'symbol' ||
-    typeof value === 'boolean' ||
-    typeof value === 'bigint' ||
-    typeof value === 'undefined' ||
-    value === null
-  );
 }
 
 export function isUndef(v: any): boolean {
@@ -89,6 +65,7 @@ export function assert(condition: any, msg: string) {
 export function warn(condition: boolean, msg: string, vm?: Vue) {
   if (!condition) {
     // todo: need console.error for test
+    // eslint-disable-next-line no-console
     console.error(`[@acevue/hooks] ${msg}`, vm);
   }
 }

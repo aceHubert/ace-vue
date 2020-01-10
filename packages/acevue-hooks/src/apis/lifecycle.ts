@@ -1,6 +1,6 @@
-import { ensureCurrentVM, status } from '../helper';
+import { objectIs } from '@acevue/utils/type';
+import { ensureCurrentVM, getCallId, isMounting } from '../helper';
 import { EffectCallback, DependencyList, CallableRefObject } from '../types/apis';
-import { objectIs } from '../utils';
 import { useRef } from './ref';
 
 /**
@@ -8,12 +8,12 @@ import { useRef } from './ref';
  * @param rawEffect Imperative function that can return a cleanup function
  * @param deps If present, effect will only activate if the values in the list change.
  */
-export function useEffect(rawEffect: EffectCallback, deps?: DependencyList) {
+export function useEffect(rawEffect: EffectCallback, deps?: DependencyList): void {
   const vm = ensureCurrentVM('useEffect');
-  const id = ++status.callIndex;
+  const id = getCallId();
 
   const store = (vm._effectStore = vm._effectStore || Object.create(null));
-  if (status.isMounting) {
+  if (isMounting()) {
     const cleanup: CallableRefObject<ReturnType<EffectCallback>> = Object.assign(
       function() {
         const { current } = cleanup;
@@ -26,7 +26,7 @@ export function useEffect(rawEffect: EffectCallback, deps?: DependencyList) {
         current: null,
       },
     );
-    let effect: CallableRefObject<EffectCallback> = Object.assign(
+    const effect: CallableRefObject<EffectCallback> = Object.assign(
       function(this: any) {
         const { current } = effect;
         if (current) {
@@ -65,16 +65,16 @@ export function useEffect(rawEffect: EffectCallback, deps?: DependencyList) {
  * lifecycle mounted
  * @param effect Imperative function
  */
-export function useMounted(effect: () => void) {
+export function useMounted(effect: () => void): void {
   useEffect(effect, []);
 }
 
 /**
- *
+ * lifecycle updated
  * @param effect Imperative function
  * @param deps If present, effect will only activate if the values in the list change.
  */
-export function useUpdated(effect: () => void, deps?: DependencyList) {
+export function useUpdated(effect: () => void, deps?: DependencyList): void {
   const isMount = useRef(true);
   useEffect(() => {
     if (isMount.current) {
@@ -85,6 +85,10 @@ export function useUpdated(effect: () => void, deps?: DependencyList) {
   }, deps);
 }
 
-export function useDestroyed(effect: () => void) {
+/**
+ * lifecycle destroyed
+ * @param effect Imperative function
+ */
+export function useDestroyed(effect: () => void): void {
   useEffect(() => effect, []);
 }

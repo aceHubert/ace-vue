@@ -1,7 +1,8 @@
-import { ensureCurrentVM, status } from '../helper';
-import { Dispatch, SetStateAction, MutableRefObject, PrimitiveType, isRef } from '../types/apis';
-import { isPrimitive } from '../utils';
-import { createRef } from './ref';
+import { isPrimitive } from '@acevue/utils/type';
+import { ensureCurrentVM, getCallId, isMounting } from '../helper';
+import { Dispatch, SetStateAction, MutableRefObject, PrimitiveType } from '../types/apis';
+import { createRef, isRef } from './ref';
+import { observe } from './reactivty';
 
 /**
  * Returns a stateful value, and a function to update it.
@@ -22,16 +23,17 @@ export function useState<S>(
  */
 export function useState(initialState?: any): any {
   const vm = ensureCurrentVM('useState');
-  const id = ++status.callIndex;
-  const state = (vm.$data._state = vm.$data._state || {});
-  const updater = (newValue: any) => {
+  const id = getCallId();
+
+  const state = (vm._stateStore = vm._stateStore || observe({}));
+  const updater = (newValue: any): void => {
     if (isRef(state[id])) {
       state[id].current = newValue;
     } else {
       state[id] = newValue;
     }
   };
-  if (status.isMounting) {
+  if (isMounting()) {
     vm.$set(
       state,
       id,
@@ -58,9 +60,10 @@ export function useData<T>(
   initialData: T | null,
 ): T extends PrimitiveType ? MutableRefObject<T> : T {
   const vm = ensureCurrentVM('useData');
-  const id = ++status.callIndex;
-  const state = (vm.$data._state = vm.$data._state || {});
-  if (status.isMounting) {
+  const id = getCallId();
+
+  const state = (vm._stateStore = vm._stateStore || observe({}));
+  if (isMounting()) {
     vm.$set(state, id, initialData);
   }
 

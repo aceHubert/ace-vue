@@ -2,18 +2,29 @@
   "name": "@acevue/hooks",
   "version": "0.1.0-alpha",
   "private": false,
-  "author": {
-    "name": "Hubert",
-    "email": "yi.xiang@live.com"
-  },
+  "author": "Hubert<yi.xiang@live.com>",
   "description": "AceVue Hooks.",
-  "main": "./dist/index.js",
+  "main": "dist/index.common.js",
+  "umd:main": "dist/index.umd.js",
+  "module": "dist/index.esm.js",
+  "typings": "types/index.d.ts",
   "keywords": [
     "vue",
     "vue-component",
     "acevue",
     "hooks"
   ],
+  "files": [
+    "dist/",
+    "types/"
+  ],
+  "scripts": {
+    "start": "cross-env TARGET=es rollup -c scripts/rollup.config.js -w",
+    "build": "rollup -c scripts/rollup.config.js",
+    "release": "bash scripts/release.sh",
+    "test": "cd ../../ && cross-env NODE_ENV=test jest --config packages/acevue-hooks/jest.config.json"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/aceHubert/acevue.git",
@@ -23,17 +34,12 @@
     "url": "https://github.com/aceHubert/acevue/issues"
   },
   "homepage": "https://vue.acehubert.com/",
-  "scripts": {
-    "start": "cross-env TARGET=es rollup -c scripts/rollup.config.js -w",
-    "build": "rollup -c scripts/rollup.config.js",
-    "release": "bash scripts/release.sh",
-    "test": "cd ../../ && cross-env NODE_ENV=test jest --config packages/acevue-hooks/jest.config.json"
-  },
-  "license": "MIT",
   "peerDependencies": {
     "vue": "^2.5.22"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@acevue/utils": "0.1.0-alpha"
+  },
   "devDependencies": {
     "rollup": "^1.27.2",
     "rollup-plugin-clear": "^2.0.7",

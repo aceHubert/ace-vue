@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "../packages/acevue-hooks/src/*.d.ts",
+    "types"
+  ],
+  "references": [{ "path": "../packages/acevue-hooks/" }]
+}

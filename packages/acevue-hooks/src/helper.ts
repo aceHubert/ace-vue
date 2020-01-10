@@ -11,7 +11,17 @@ export function ensureCurrentVM(hook: string): ComponentInstance {
   return vm!;
 }
 
-export const status = {
-  callIndex: 0,
-  isMounting: false,
-};
+export function isMounting(): boolean {
+  const vm = ensureCurrentVM('isMounting');
+  return !vm._vnode;
+}
+
+let callIndex = 0;
+export function getCallId(): number {
+  return ++callIndex;
+}
+
+export function resetCallId(): number {
+  callIndex !== 0 && (callIndex = 0);
+  return callIndex;
+}

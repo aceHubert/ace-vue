@@ -1,14 +1,37 @@
-import { ensureCurrentVM, status } from '../helper';
-import { MutableRefObject, RefObject, RefOption, RefImpl } from '../types/apis';
+import { ensureCurrentVM, getCallId, isMounting } from '../helper';
+import { MutableRefObject, RefObject, RefOption, Ref } from '../types/apis';
+import { proxy } from '../utils';
+
+class RefImpl<T> implements RefObject<T> {
+  public current!: T;
+  constructor({ get, set }: RefOption<T>) {
+    proxy(this, 'current', {
+      get,
+      set,
+    });
+  }
+}
+
+/**
+ * isRef
+ * @param obj value
+ */
+export function isRef<T>(obj: any): obj is Ref<T> {
+  return obj instanceof RefImpl;
+}
 
 /**
  * createRef
  * @param options get/set
  */
 export function createRef<T>(options: RefOption<T>): RefObject<T> {
+  const vm = ensureCurrentVM('createRef');
+  const id = getCallId();
+
+  const store = (vm._refsStore = vm._refsStore || {});
   // seal the ref, this could prevent ref from being observed
   // It's safe to seal the ref, since we really shoulnd't extend it.
-  return Object.seal(new RefImpl<T>(options));
+  return isMounting() ? (store[id] = Object.seal(new RefImpl<T>(options))) : store[id];
 }
 
 /**
@@ -28,10 +51,16 @@ export function useRef<T>(initialValue: T | null): RefObject<T>;
 /**
  * implementation
  */
-export function useRef(initialValue?: any): any {
+export function useRef<T>(initialValue?: T): MutableRefObject<T> | RefObject<T> {
   const vm = ensureCurrentVM('useRef');
-  const id = ++status.callIndex;
+  const id = getCallId();
 
-  const store = (vm._computedStore = vm._computedStore || Object.create(null));
-  return status.isMounting ? (store[id] = { current: initialValue }) : store[id];
+  const store = (vm._refsStore = vm._refsStore || {});
+  if (isMounting()) {
+    store[id] = initialValue;
+  }
+  return createRef({
+    get: () => store[id],
+    set: val => (store[id] = val),
+  });
 }

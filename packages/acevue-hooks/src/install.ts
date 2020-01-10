@@ -1,5 +1,6 @@
 import { VueConstructor } from 'vue';
-import { assert } from './utils';
+import { AnyObject } from './types/basic';
+import { assert, isPlainObject, hasOwn, hasSymbol } from './utils';
 import { setCurrentVue, currentVue } from './runtimeContext';
 import { withHooks } from './component';
 import {
@@ -17,10 +18,43 @@ import {
   useEffect,
   createContext,
   useContext,
+  isRef,
 } from './apis';
 
+/**
+ * Helper that recursively merges two data objects together.
+ */
+function mergeData(to: AnyObject, from?: AnyObject): Record<string, any> {
+  if (!from) return to;
+  let key: any;
+  let toVal: any;
+  let fromVal: any;
+
+  const keys = hasSymbol ? Reflect.ownKeys(from) : Object.keys(from);
+
+  for (let i = 0; i < keys.length; i++) {
+    key = keys[i];
+    // in case the object is already observed...
+    if (key === '__ob__') continue;
+    toVal = to[key];
+    fromVal = from[key];
+    if (!hasOwn(to, key)) {
+      to[key] = fromVal;
+    } else if (
+      toVal !== fromVal &&
+      isPlainObject(toVal) &&
+      !isRef(toVal) &&
+      isPlainObject(fromVal) &&
+      !isRef(fromVal)
+    ) {
+      mergeData(toVal, fromVal);
+    }
+  }
+  return to;
+}
+
 // eslint-disable-next-line no-shadow
-export function install(Vue: VueConstructor, _install: (Vue: VueConstructor) => void) {
+export function install(Vue: VueConstructor, _install: (Vue: VueConstructor) => void): void {
   if (currentVue && currentVue === Vue) {
     if (process.env.NODE_ENV !== 'production') {
       assert(false, 'already installed. Vue.use(plugin) should be called only once');
@@ -28,14 +62,14 @@ export function install(Vue: VueConstructor, _install: (Vue: VueConstructor) => 
     return;
   }
 
-  // Vue.config.optionMergeStrategies.setup = function(parent: Function, child: Function) {
-  //   return function mergedSetupFn(props: any, context: any) {
-  //     return mergeData(
-  //       typeof child === 'function' ? child(props, context) || {} : {},
-  //       typeof parent === 'function' ? parent(props, context) || {} : {}
-  //     )
-  //   }
-  // }
+  Vue.config.optionMergeStrategies.useHooks = function(parent: Function, child: Function) {
+    return function mergedUseHooksFn(props: any, context: any) {
+      return mergeData(
+        typeof child === 'function' ? child(props, context) || {} : {},
+        typeof parent === 'function' ? parent(props, context) || {} : {},
+      );
+    };
+  };
 
   //set runtime vm
   setCurrentVue(Vue);

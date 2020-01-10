@@ -1,4 +1,8 @@
-// https://github.com/vuejs/composition-api/blob/master/src/component/componentProps.ts
+/**
+ * https://github.com/vuejs/composition-api/blob/master/src/component/componentProps.ts
+ *
+ */
+
 import { Data } from './component';
 
 export type ComponentPropsOptionsWithArrayProps<PropNames extends string> = Record<PropNames, any>;

@@ -1,5 +1,5 @@
 import { WatchHandler, WatchOptions } from 'vue';
-import { ensureCurrentVM, status } from '../helper';
+import { ensureCurrentVM, isMounting } from '../helper';
 
 /**
  * watch datas
@@ -9,7 +9,7 @@ import { ensureCurrentVM, status } from '../helper';
  */
 export function useWatch<T>(getter: () => T, cb: WatchHandler<T>, options?: WatchOptions): void {
   const vm = ensureCurrentVM('useWatch');
-  if (status.isMounting) {
+  if (isMounting()) {
     vm.$watch(getter, cb, options);
   }
 }

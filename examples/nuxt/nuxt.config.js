@@ -1,62 +1,65 @@
-const path = require('path');
-const fs = require('fs');
-
-const appDirectory = fs.realpathSync(process.cwd());
-const resolveApp = relativePath => path.resolve(appDirectory, relativePath);
-
-const pkg = require('./package');
-
 module.exports = {
-  mode: 'spa',
-  rootDir: 'src/',
-  buildModules: ['@nuxt/typescript-build'],
+  mode: 'universal',
+  srcDir: 'src/',
   /*
    ** Headers of the page
    */
   head: {
-    title: pkg.name,
+    title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description },
+      {
+        hid: 'description',
+        name: 'description',
+        content: process.env.npm_package_description || '',
+      },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
-
   /*
    ** Customize the progress-bar color
    */
   loading: { color: '#fff' },
-
   /*
    ** Global CSS
    */
   css: [],
-
   /*
    ** Plugins to load before mounting the App
    */
   plugins: [],
-
+  /*
+   ** Nuxt.js dev-modules
+   */
+  buildModules: [
+    // Doc: https://github.com/nuxt-community/eslint-module
+    '@nuxtjs/eslint-module',
+  ],
   /*
    ** Nuxt.js modules
    */
   modules: [],
-
   /*
    ** Build configuration
    */
   build: {
-    transpile: [],
-
+    babel: {
+      // envName: server, client, modern
+      presets({ envName }) {
+        return [
+          [
+            '@nuxt/babel-preset-app',
+            {
+              corejs: { version: 3 },
+            },
+          ],
+        ];
+      },
+    },
     /*
      ** You can extend webpack config here
      */
-    extend(config, _ctx) {
-      Object.assign(config.resolve.alias, {
-        '@acevue/styles': resolveApp('packages/acevue-styles/src'),
-        '@acevue/utils': resolveApp('packages/acevue-utils/src'),
-      });
-    },
+    extend(config, ctx) {},
   },
 };

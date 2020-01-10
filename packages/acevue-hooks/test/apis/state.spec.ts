@@ -1,32 +1,59 @@
 import Vue, { ComponentOptions } from 'vue';
 import { MutableRefObject, Dispatch, SetStateAction } from '../../src/types/apis';
-import { withHooks, useData, useState } from '../../src';
+import { withHooks, useData, useState, useUpdated } from '../../src';
 
 describe('apis/useData', () => {
   it('with Primitive value', done => {
+    const spy = jest.fn();
     let data: MutableRefObject<number>;
     const vm = new Vue(
       withHooks(h => {
         data = useData(1);
 
+        useUpdated(() => {
+          spy();
+        });
+
         return h('div', {}, String(data.current));
       }) as ComponentOptions<Vue>,
     ).$mount();
 
+    expect(spy.mock.calls.length).toBe(0);
     expect(data!.current).toBe(1);
     expect(vm.$el.textContent).toBe('1');
     data!.current = 2;
     expect(data!.current).toBe(2);
     window
       .waitForUpdate(() => {
+        expect(spy.mock.calls.length).toBe(1);
         expect(vm.$el.textContent).toBe('2');
         data!.current = 3;
         expect(data!.current).toBe(3);
       })
       .then(() => {
+        expect(spy.mock.calls.length).toBe(2);
         expect(vm.$el.textContent).toBe('3');
       })
       .then(done);
+  });
+
+  it('should not emit updated hook on mounting', () => {
+    // changed to use "Vue.observable" from "vm.$data",
+    // because it emits the hook updated once when using "vm.$set" to update "vm.$data"  before mounted
+    const spy = jest.fn();
+    new Vue(
+      withHooks(h => {
+        const data = useData(1);
+
+        useUpdated(() => {
+          spy();
+        });
+
+        return h('div', {}, String(data.current));
+      }) as ComponentOptions<Vue>,
+    ).$mount();
+
+    expect(spy.mock.calls.length).toBe(0);
   });
 
   it('with Object Reference value', done => {
@@ -103,18 +130,18 @@ describe('apis/useState', () => {
       }) as ComponentOptions<Vue>,
     ).$mount();
 
-    const $span = vm.$el.querySelector('span')!;
+    const $span = vm.$el.querySelector('span');
     expect(count!.current).toBe(1);
-    expect($span.textContent).toBe('1');
+    expect($span?.textContent).toBe('1');
     setCount!(count!.current + 1);
     expect(count!.current).toBe(2);
     window
       .waitForUpdate(() => {
-        expect($span.textContent).toBe('2');
+        expect($span?.textContent).toBe('2');
         count!.current = 3;
       })
       .then(() => {
-        expect($span.textContent).toBe('3');
+        expect($span?.textContent).toBe('3');
       })
       .then(done);
   });

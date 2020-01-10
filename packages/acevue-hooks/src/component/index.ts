@@ -6,7 +6,7 @@ export {
   UseHooksFunction,
   activateCurrentInstance,
   createUseHooksContext,
-  resolveScopedSlots,
+  // resolveScopedSlots,
   createComponent,
   withHooks,
 } from './component';

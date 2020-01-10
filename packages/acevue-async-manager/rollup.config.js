@@ -76,7 +76,6 @@ function genConfig({ outFile, format, mode }, clean = false) {
   };
 }
 
-// eslint-disable-next-line import/no-mutable-exports
 let buildConfig;
 
 if (process.env.TARGET) {

@@ -2,6 +2,7 @@ import Vue from 'vue';
 import { withHooks, useProvide, useInject, useData } from '../../src';
 
 describe('apis/useInject', () => {
+  // @ts-ignore
   let warn: any;
   beforeEach(() => {
     warn = jest.spyOn(global.console, 'error').mockImplementation(() => null);
@@ -86,12 +87,12 @@ describe('apis/useInject', () => {
       },
     }).$mount();
 
-    const $span = vm.$el.querySelector('span')!;
-    expect($span.textContent).toBe('aa');
+    const $span = vm.$el.querySelector('span');
+    expect($span?.textContent).toBe('aa');
     data!.a = 'bb';
     window
       .waitForUpdate(() => {
-        expect($span.textContent).toBe('bb');
+        expect($span?.textContent).toBe('bb');
       })
       .then(done);
   });
@@ -134,6 +135,7 @@ describe('apis/useInject', () => {
         return h(Parent, {}, [h(Child)]);
       },
     }).$mount();
+
     expect(warn.mock.calls[0][0]).toMatch('[@acevue/hooks] Injection "emptyValue" not found');
   });
 });

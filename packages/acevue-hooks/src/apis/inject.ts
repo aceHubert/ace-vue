@@ -1,5 +1,5 @@
 import { ComponentInstance } from '../component';
-import { ensureCurrentVM, status } from '../helper';
+import { ensureCurrentVM, isMounting, getCallId } from '../helper';
 import { hasOwn, warn } from '../utils';
 import { InjectionKey } from '../types/apis';
 
@@ -20,7 +20,7 @@ function resolveInject(provideKey: InjectionKey<any>, vm: ComponentInstance): an
 
 export function useProvide<T>(key: InjectionKey<T> | string, value: T): void {
   const vm = ensureCurrentVM('useInject');
-  if (status.isMounting) {
+  if (isMounting()) {
     if (!vm._provided) {
       const provideCache = {};
       Object.defineProperty(vm, '_provided', {
@@ -40,10 +40,10 @@ export function useInject<T>(key: InjectionKey<T> | string, defaultValue?: T): T
   }
 
   const vm = ensureCurrentVM('useInject');
-  const id = ++status.callIndex;
+  const id = getCallId();
 
   const store = (vm._injectStore = vm._injectStore || {});
-  if (status.isMounting) {
+  if (isMounting()) {
     store[id] = resolveInject(key as InjectionKey<T>, vm);
   }
 

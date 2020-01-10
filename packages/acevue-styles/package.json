@@ -2,12 +2,9 @@
   "name": "@acevue/styles",
   "version": "0.1.0-alpha",
   "private": false,
-  "author": {
-    "name": "Hubert",
-    "email": "yi.xiang@live.com"
-  },
+  "author": "Hubert<yi.xiang@live.com>" ,
   "description": "AceVue Styles.",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "keywords": [
     "vue",
     "vue-component",

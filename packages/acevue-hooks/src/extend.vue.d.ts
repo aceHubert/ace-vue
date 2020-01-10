@@ -17,6 +17,7 @@ import {
   RefObject,
   InjectionKey,
   PrimitiveType,
+  Context,
 } from './types/apis';
 import { Option as ComputedOption } from './apis/computed';
 
@@ -31,7 +32,7 @@ declare module 'vue/types/vue' {
     [key: string]: any;
   }
   interface VueConstructor {
-    observable<T>(x: any): T; // < 2.6.0
+    observable<T>(obj: T): T; // < 2.6.0
     // data
     useData<T>(initialData: T | null): T extends PrimitiveType ? MutableRefObject<T> : T;
 
@@ -58,6 +59,13 @@ declare module 'vue/types/vue' {
     useUpdated(factory: () => void, deps?: any[]): void;
     useDestroyed(factory: () => void): void;
     useEffect(factory: EffectCallback, deps?: DependencyList): void;
+
+    // context
+    createContext<T>(
+      defaultValue: T,
+      calculateChangedBits?: ((prev: T, next: T) => number) | null,
+    ): Context<T>;
+    useContext<T>(context: Context<T>, observedBits?: number | null): T;
 
     // withHooks: object format with array props declaration
     withHooks<
